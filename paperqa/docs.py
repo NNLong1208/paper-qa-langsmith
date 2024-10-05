@@ -12,7 +12,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any, BinaryIO, cast
 from uuid import UUID, uuid4
-
+from langsmith import traceable
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -239,7 +239,7 @@ class Docs(BaseModel):
                 **kwargs,
             )
         )
-
+    @traceable(name="Process data")
     async def aadd(  # noqa: PLR0912
         self,
         path: Path,
@@ -524,7 +524,7 @@ class Docs(BaseModel):
                 summary_llm_model=summary_llm_model,
             )
         )
-
+    @traceable(name="Evidence")
     async def aget_evidence(
         self,
         query: Answer | str,
@@ -638,7 +638,7 @@ class Docs(BaseModel):
                 embedding_model=embedding_model,
             )
         )
-
+    @traceable(name="Query")
     async def aquery(  # noqa: PLR0912
         self,
         query: Answer | str,

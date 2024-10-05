@@ -605,11 +605,22 @@ class LiteLLMModel(LLMModel):
     async def achat(  # type: ignore[override]
         self, messages: Iterable[dict[str, str]]
     ) -> Chunk:
-        response = await self.router.acompletion(self.name, messages)
+        from langchain_openai import ChatOpenAI
+        from langchain.schema import AIMessage, HumanMessage, SystemMessage
+        llm = ChatOpenAI(model_name=self.name, temperature=0.7)
+        formatted_messages = []
+        for msg in messages:
+            if msg['role'] == 'system':
+                formatted_messages.append(SystemMessage(content=msg['content']))
+            elif msg['role'] == 'user':
+                formatted_messages.append(HumanMessage(content=msg['content']))
+            elif msg['role'] == 'assistant':
+                formatted_messages.append(AIMessage(content=msg['content']))
+        response = await llm.apredict_messages(formatted_messages)
         return Chunk(
-            text=response.choices[0].message.content,
-            prompt_tokens=response.usage.prompt_tokens,
-            completion_tokens=response.usage.completion_tokens,
+            text=response.content,
+            prompt_tokens=response.response_metadata['token_usage']['prompt_tokens'],
+            completion_tokens=response.response_metadata['token_usage']['completion_tokens'],
         )
 
     @rate_limited
