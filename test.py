@@ -4,20 +4,19 @@ from paperqa import Docs, Settings
 from dotenv import load_dotenv
 import os
 import glob
-
+from langsmith import traceable
 load_dotenv()
-# Ensure you have set your OpenAI API key in the environment
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Initialize the Docs object for managing the documents
-docs = Docs()
+@traceable(name="Process data batch")
+def process_data_batch(path):
+    docs = Docs()
+    for file_path in glob.glob(f"{path}/*.*"):
+        docs.add(file_path)
+    return docs
+docs = process_data_batch("my_papers")
 
-# Add your documents (pdf, txt, etc.)
-# Replace 'my_paper.pdf' with your actual file path.
-for file_path in glob.glob("my_papers/*.*"):  # Adjust the pattern to match specific file types if needed
-    docs.add(file_path)
 
-# Define the query you want to ask
 query = "How many studies discussed the combination of skin needling with other treatment methods?"
 
 # Configure settings for OpenAI, without using any other external APIs

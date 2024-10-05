@@ -28,7 +28,8 @@ from litellm import (
     token_counter,
 )
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
-
+from langchain_openai import ChatOpenAI
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from paperqa.prompts import default_system_prompt
 from paperqa.rate_limiter import GLOBAL_LIMITER
 from paperqa.types import Embeddable, LLMResult
@@ -605,8 +606,7 @@ class LiteLLMModel(LLMModel):
     async def achat(  # type: ignore[override]
         self, messages: Iterable[dict[str, str]]
     ) -> Chunk:
-        from langchain_openai import ChatOpenAI
-        from langchain.schema import AIMessage, HumanMessage, SystemMessage
+
         llm = ChatOpenAI(model_name=self.name, temperature=0.7)
         formatted_messages = []
         for msg in messages:
