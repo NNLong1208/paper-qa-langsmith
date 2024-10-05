@@ -3,6 +3,7 @@ import openai
 from paperqa import Docs, Settings
 from dotenv import load_dotenv
 import os
+import glob
 
 load_dotenv()
 # Ensure you have set your OpenAI API key in the environment
@@ -13,7 +14,8 @@ docs = Docs()
 
 # Add your documents (pdf, txt, etc.)
 # Replace 'my_paper.pdf' with your actual file path.
-docs.add("my_papers/Skin_needling_as_a_treatment_for_acne_scarring_An_.pdf")
+for file_path in glob.glob("my_papers/*.*"):  # Adjust the pattern to match specific file types if needed
+    docs.add(file_path)
 
 # Define the query you want to ask
 query = "How many studies discussed the combination of skin needling with other treatment methods?"
